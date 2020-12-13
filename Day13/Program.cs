@@ -46,20 +46,20 @@ namespace Day13
             var input = File.ReadAllLines("input.txt");
 
             var timestamp = int.Parse(input[0]);
-            var busses = input[1].Split(',')
+            var buses = input[1].Split(',')
                 .Select((raw, index) => (raw, index))
                 .Where(b => b.raw != "x")
                 .Select(b => (id: int.Parse(b.raw), b.index))
                 .ToList();
 
-            var minWaitTime = busses.Min(b => WaitTime(b.id, timestamp));
-            var minWaitTimeBus = busses.First(b => WaitTime(b.id, timestamp) == minWaitTime);
+            var minWaitTime = buses.Min(b => WaitTime(b.id, timestamp));
+            var minWaitTimeBus = buses.First(b => WaitTime(b.id, timestamp) == minWaitTime);
 
             var answer1 = minWaitTime * minWaitTimeBus.id;
 
             Console.WriteLine($"Answer 1: {answer1}");
 
-            var remainders = busses.Select(b => (value: Modulo(b.id - b.index, b.id), mod: (long)b.id)).ToList();
+            var remainders = buses.Select(b => (value: Modulo(b.id - b.index, b.id), mod: (long)b.id)).ToList();
 
             var mod = Multiply(remainders.Select(r => r.mod).ToList());
             var terms = remainders.Select(r => r.value * (mod / r.mod) * FindInverse(mod / r.mod, r.mod)).ToList();
