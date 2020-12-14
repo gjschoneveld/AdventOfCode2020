@@ -22,25 +22,6 @@ namespace Day14
             return (long.Parse(parts[1]), long.Parse(parts[2]));
         }
 
-        static long ApplyValueMask(long value, string mask)
-        {
-            for (int i = 0; i < mask.Length; i++)
-            {
-                var bitValue = 1L << (mask.Length - i - 1);
-
-                if (mask[i] == '1')
-                {
-                    value |= bitValue;
-                }
-                else if (mask[i] == '0')
-                {
-                    value &= ~bitValue;
-                }
-            }
-
-            return value;
-        }
-
         static string ToBitString(long value)
         {
             return Convert.ToString(value, 2).PadLeft(36, '0');
@@ -51,27 +32,14 @@ namespace Day14
             return Convert.ToInt64(value, 2);
         }
 
+        static string ApplyValueMask(string value, string mask)
+        {
+            return new string(value.Zip(mask, (v, m) => (m == '0' || m == '1') ? m : v).ToArray());
+        }
+
         static string ApplyAddressMask(string address, string mask)
         {
-            var result = new StringBuilder(mask.Length);
-
-            for (int i = 0; i < mask.Length; i++)
-            {
-                if (mask[i] == '0')
-                {
-                    result.Append(address[i]);
-                }
-                else if (mask[i] == '1')
-                {
-                    result.Append('1');
-                }
-                else
-                {
-                    result.Append('X');
-                }
-            }
-
-            return result.ToString();
+            return new string(address.Zip(mask, (a, m) => m == '0' ? a : m).ToArray());
         }
 
         static List<string> GenerateAddresses(string generator)
@@ -119,9 +87,9 @@ namespace Day14
 
                 (var address, var raw) = ParseMem(line);
 
-                var value = ApplyValueMask(raw, mask);
+                var value = ApplyValueMask(ToBitString(raw), mask);
 
-                memory1[address] = value;
+                memory1[address] = ToLong(value);
             }
 
             var answer1 = memory1.Values.Sum();
