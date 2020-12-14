@@ -34,7 +34,7 @@ namespace Day14
 
         static string ApplyValueMask(string value, string mask)
         {
-            return new string(value.Zip(mask, (v, m) => (m == '0' || m == '1') ? m : v).ToArray());
+            return new string(value.Zip(mask, (v, m) => m == 'X' ? v : m).ToArray());
         }
 
         static string ApplyAddressMask(string address, string mask)
