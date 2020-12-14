@@ -22,9 +22,9 @@ namespace Day14
             return (long.Parse(parts[1]), long.Parse(parts[2]));
         }
 
-        static string ToBitString(long value)
+        static string ToBitString(long value,  int length = 36)
         {
-            return Convert.ToString(value, 2).PadLeft(36, '0');
+            return Convert.ToString(value, 2).PadLeft(length, '0');
         }
 
         static long ToLong(string value)
@@ -57,11 +57,11 @@ namespace Day14
 
             for (var value = 0; value < (1 << indices.Count); value++)
             {
+                var bits = ToBitString(value, indices.Count);
+
                 for (var i = 0; i < indices.Count; i++)
                 {
-                    var isSet = (value & (1 << i)) > 0;
-
-                    builder[indices[i]] = isSet ? '1' : '0';
+                    builder[indices[i]] = bits[i];
                 }
 
                 result.Add(builder.ToString());
