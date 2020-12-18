@@ -62,7 +62,7 @@ namespace Day17
             }
 
             var innerLimits = limits.Skip(1).ToList();
-            var innerPositions = AllPositions(innerLimits);
+            var innerPositions = AllPositions(innerLimits).ToList();
 
             for (int v = limits[0].min; v <= limits[0].max; v++)
             {
