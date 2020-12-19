@@ -5,26 +5,60 @@ using System.Linq;
 
 namespace Day19
 {
-    class Rule
+    abstract class Rule
     {
         public int Id { get; set; }
 
-        public char? Value { get; set; }
+        public abstract List<int> MatchLengths(Dictionary<int, Rule> rules, string value);
 
-        public List<List<int>> InnerRules { get; set; }
-
-        public List<int> MatchLengths(Dictionary<int, Rule> rules, string value)
+        public static Rule Parse(string x)
         {
-            if (Value != null)
-            {
-                if (value.Length > 0 && Value == value[0])
-                {
-                    return new List<int> { 1 };
-                }
+            var colon = x.IndexOf(':');
 
-                return new List<int>();
+            var id = int.Parse(x.Substring(0, colon));
+
+            var rule = x.Substring(colon + 1).Trim(' ', '\"');
+
+            if (!char.IsDigit(rule[0]))
+            {
+                return new ValueRule
+                {
+                    Id = id,
+                    Value = rule[0]
+                };
             }
 
+            var innerRules = rule.Split('|').Select(c => c.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList()).ToList();
+
+            return new RegularRule
+            {
+                Id = id,
+                InnerRules = innerRules
+            };
+        }
+    }
+
+    class ValueRule : Rule
+    {
+        public char? Value { get; set; }
+
+        public override List<int> MatchLengths(Dictionary<int, Rule> rules, string value)
+        {
+            if (value.Length > 0 && Value == value[0])
+            {
+                return new List<int> { 1 };
+            }
+
+            return new List<int>();
+        }
+    }
+
+    class RegularRule : Rule
+    {
+        public List<List<int>> InnerRules { get; set; }
+
+        public override List<int> MatchLengths(Dictionary<int, Rule> rules, string value)
+        {
             var result = new List<int>();
 
             foreach (var combination in InnerRules)
@@ -51,32 +85,6 @@ namespace Day19
             }
 
             return result.Distinct().ToList();
-        }
-
-        public static Rule Parse(string x)
-        {
-            var colon = x.IndexOf(':');
-
-            var id = int.Parse(x.Substring(0, colon));
-
-            var rule = x.Substring(colon + 1).Trim(' ', '\"');
-
-            if (!char.IsDigit(rule[0]))
-            {
-                return new Rule
-                {
-                    Id = id,
-                    Value = rule[0]
-                };
-            }
-
-            var innerRules = rule.Split('|').Select(c => c.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList()).ToList();
-
-            return new Rule
-            {
-                Id = id,
-                InnerRules = innerRules
-            };
         }
     }
 
