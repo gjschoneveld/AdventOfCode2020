@@ -57,34 +57,21 @@ namespace Day19
     {
         public List<List<int>> InnerRules { get; set; }
 
-        public override List<int> MatchLengths(Dictionary<int, Rule> rules, string value)
+        private List<int> MatchLengthsForInnerRule(Dictionary<int, Rule> rules, List<int> rule, string value)
         {
-            var result = new List<int>();
+            var offsets = new List<int> { 0 };
 
-            foreach (var combination in InnerRules)
+            foreach (var id in rule)
             {
-                var offsets = new List<int> { 0 };
-
-                foreach (var rule in combination)
-                {
-                    var newOffsets = new List<int>();
-
-                    foreach (var offset in offsets)
-                    {
-                        var innerValue = value.Substring(offset);
-
-                        var innerLengths = rules[rule].MatchLengths(rules, innerValue);
-
-                        newOffsets.AddRange(innerLengths.Select(l => l + offset));
-                    }
-
-                    offsets = newOffsets;
-                }
-
-                result.AddRange(offsets);
+                offsets = offsets.SelectMany(o => rules[id].MatchLengths(rules, value.Substring(o)).Select(l => o + l)).Distinct().ToList();
             }
 
-            return result.Distinct().ToList();
+            return offsets;
+        }
+
+        public override List<int> MatchLengths(Dictionary<int, Rule> rules, string value)
+        {
+            return InnerRules.SelectMany(r => MatchLengthsForInnerRule(rules, r, value)).Distinct().ToList();
         }
     }
 
@@ -102,8 +89,8 @@ namespace Day19
 
             Console.WriteLine($"Answer 1: {answer1}");
 
-            rules[8].InnerRules.Add(new List<int> { 42, 8 });
-            rules[11].InnerRules.Add(new List<int> { 42, 11, 31 });
+            (rules[8] as RegularRule).InnerRules.Add(new List<int> { 42, 8 });
+            (rules[11] as RegularRule).InnerRules.Add(new List<int> { 42, 11, 31 });
 
             var answer2 = messages.Count(m => rules[0].MatchLengths(rules, m).Contains(m.Length));
 
