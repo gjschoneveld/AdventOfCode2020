@@ -28,7 +28,10 @@ namespace Day19
                 };
             }
 
-            var innerRules = rule.Split('|').Select(c => c.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList()).ToList();
+            var innerRules = rule
+                .Split('|')
+                .Select(c => c.Trim().Split(' ').Select(int.Parse).ToList())
+                .ToList();
 
             return new RegularRule
             {
@@ -63,7 +66,10 @@ namespace Day19
 
             foreach (var id in rule)
             {
-                offsets = offsets.SelectMany(o => rules[id].MatchLengths(rules, value.Substring(o)).Select(l => o + l)).Distinct().ToList();
+                offsets = offsets
+                    .SelectMany(o => rules[id].MatchLengths(rules, value.Substring(o)).Select(l => o + l))
+                    .Distinct()
+                    .ToList();
             }
 
             return offsets;
@@ -71,7 +77,10 @@ namespace Day19
 
         public override List<int> MatchLengths(Dictionary<int, Rule> rules, string value)
         {
-            return InnerRules.SelectMany(r => MatchLengthsForInnerRule(rules, r, value)).Distinct().ToList();
+            return InnerRules
+                .SelectMany(r => MatchLengthsForInnerRule(rules, r, value))
+                .Distinct()
+                .ToList();
         }
     }
 
@@ -81,9 +90,14 @@ namespace Day19
         {
             var input = File.ReadAllLines("input.txt");
 
-            var rules = input.TakeWhile(i => i != "").Select(Rule.Parse).ToDictionary(r => r.Id);
+            var rules = input
+                .TakeWhile(i => i != "")
+                .Select(Rule.Parse)
+                .ToDictionary(r => r.Id);
 
-            var messages = input.Skip(rules.Count + 1).ToList();
+            var messages = input
+                .Skip(rules.Count + 1)
+                .ToList();
 
             var answer1 = messages.Count(m => rules[0].MatchLengths(rules, m).Contains(m.Length));
 
