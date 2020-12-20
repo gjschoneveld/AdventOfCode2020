@@ -467,17 +467,10 @@ namespace Day20
             
             var pattern = ParsePattern(patternRaw);
 
-            var monsters = 0;
-
-            foreach (var orientation in combined.Orientations())
-            {
-                monsters = orientation.CountPattern(pattern);
-
-                if (monsters > 0)
-                {
-                    break;
-                }
-            }
+            var monsters = combined
+                .Orientations()
+                .Select(t => t.CountPattern(pattern))
+                .First(m => m > 0);
 
             var answer2 = CountTrue(combined.Data) - monsters * CountTrue(pattern);
 
