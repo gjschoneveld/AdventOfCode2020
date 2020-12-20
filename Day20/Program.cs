@@ -16,7 +16,7 @@ namespace Day20
 
         public List<Tile> Neighbours { get; set; }
 
-        public bool InGrid { get; set; }
+        public bool PlacedInGrid { get; set; }
 
         public bool HasPattern(bool[,] pattern, int x, int y)
         {
@@ -286,17 +286,17 @@ namespace Day20
             return values.Aggregate((a, b) => a * b);
         }
 
-        static bool InGrid(Tile[,] grid, int x, int y)
+        static bool CoordinateExists(Tile[,] grid, int x, int y)
         {
             var sizeX = grid.GetLength(0);
             var sizeY = grid.GetLength(1);
 
-            return (0 <= x && x < sizeX && 0 <= y && y < sizeY);
+            return 0 <= x && x < sizeX && 0 <= y && y < sizeY;
         }
 
         static Tile GetTile(Tile[,] grid, int x, int y)
         {
-            if (InGrid(grid, x, y))
+            if (CoordinateExists(grid, x, y))
             {
                 return grid[x, y];
             }
@@ -314,7 +314,7 @@ namespace Day20
                 (x, y + 1)
             };
 
-            return neighbours.Count(nb => InGrid(grid, nb.x, nb.y));
+            return neighbours.Count(nb => CoordinateExists(grid, nb.x, nb.y));
         }
 
         static Tile[,] FillGrid(List<Tile> tiles)
@@ -327,14 +327,14 @@ namespace Day20
 
             // top row
             grid[0, 0] = corners[0];
-            grid[0, 0].InGrid = true;
+            grid[0, 0].PlacedInGrid = true;
 
             for (int x = 1; x < size; x++)
             {
                 var neighbourCount = CountNeighbours(grid, x, 0);
 
-                grid[x, 0] = tiles.First(t => !t.InGrid && t.Neighbours.Count == neighbourCount && t.Neighbours.Contains(grid[x - 1, 0]));
-                grid[x, 0].InGrid = true;
+                grid[x, 0] = tiles.First(t => !t.PlacedInGrid && t.Neighbours.Count == neighbourCount && t.Neighbours.Contains(grid[x - 1, 0]));
+                grid[x, 0].PlacedInGrid = true;
             }
 
             // remaining rows
@@ -342,15 +342,15 @@ namespace Day20
             {
                 var neighbourCount = CountNeighbours(grid, 0, y);
 
-                grid[0, y] = tiles.First(t => !t.InGrid && t.Neighbours.Count == neighbourCount && t.Neighbours.Contains(grid[0, y - 1]));
-                grid[0, y].InGrid = true;
+                grid[0, y] = tiles.First(t => !t.PlacedInGrid && t.Neighbours.Count == neighbourCount && t.Neighbours.Contains(grid[0, y - 1]));
+                grid[0, y].PlacedInGrid = true;
 
                 for (int x = 1; x < size; x++)
                 {
                     neighbourCount = CountNeighbours(grid, x, y);
 
-                    grid[x, y] = tiles.First(t => !t.InGrid && t.Neighbours.Count == neighbourCount && t.Neighbours.Contains(grid[x - 1, y]) && t.Neighbours.Contains(grid[x, y - 1]));
-                    grid[x, y].InGrid = true;
+                    grid[x, y] = tiles.First(t => !t.PlacedInGrid && t.Neighbours.Count == neighbourCount && t.Neighbours.Contains(grid[x - 1, y]) && t.Neighbours.Contains(grid[x, y - 1]));
+                    grid[x, y].PlacedInGrid = true;
                 }
             }
 
