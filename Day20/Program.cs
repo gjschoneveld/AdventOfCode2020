@@ -215,7 +215,6 @@ namespace Day20
                 for (int x = 0; x < sizeX; x++)
                 {
                     Console.Write(Data[x, y] ? '#' : '.');
-
                 }
 
                 Console.WriteLine();
