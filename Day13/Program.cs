@@ -9,14 +9,14 @@ namespace Day13
     {
         static int WaitTime(int bus, int timestamp)
         {
-            var done = timestamp % bus;
+            var elapsed = timestamp % bus;
 
-            if (done == 0)
+            if (elapsed == 0)
             {
                 return 0;
             }
 
-            return bus - done;
+            return bus - elapsed;
         }
 
         static long Modulo(long value, long mod)
