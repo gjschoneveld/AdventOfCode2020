@@ -48,7 +48,6 @@ namespace Day21
 
                     candidates[allergen] = candidates[allergen].Intersect(item.Ingredients).ToList();
                 }
-
             }
 
             var allergenToIngredient = new Dictionary<string, string>();
