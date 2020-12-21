@@ -15,9 +15,9 @@ namespace Day19
         {
             var colon = x.IndexOf(':');
 
-            var id = int.Parse(x.Substring(0, colon));
+            var id = int.Parse(x[..colon]);
 
-            var rule = x.Substring(colon + 1).Trim(' ', '\"');
+            var rule = x[(colon + 1)..].Trim(' ', '\"');
 
             if (!char.IsDigit(rule[0]))
             {
@@ -67,7 +67,7 @@ namespace Day19
             foreach (var id in rule)
             {
                 offsets = offsets
-                    .SelectMany(o => rules[id].MatchLengths(rules, value.Substring(o)).Select(l => o + l))
+                    .SelectMany(o => rules[id].MatchLengths(rules, value[o..]).Select(l => o + l))
                     .Distinct()
                     .ToList();
             }
