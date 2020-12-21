@@ -71,12 +71,12 @@ namespace Day21
 
             var ingredientsWithAllergen = allergenToIngredient.Values.ToHashSet();
 
-            var answer1 = food.SelectMany(f => f.Ingredients).Where(i => !ingredientsWithAllergen.Contains(i)).Count();
+            var answer1 = food.SelectMany(f => f.Ingredients).Count(i => !ingredientsWithAllergen.Contains(i));
 
             Console.WriteLine($"Answer 1: {answer1}");
 
 
-            var answer2 = string.Join(",", allergenToIngredient.OrderBy(kv => kv.Key).Select(kv => kv.Value).ToArray());
+            var answer2 = string.Join(",", allergenToIngredient.OrderBy(kv => kv.Key).Select(kv => kv.Value));
 
             Console.WriteLine($"Answer 2: {answer2}");
         }
