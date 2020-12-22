@@ -22,7 +22,7 @@ namespace Day22
 
             public int GetHashCode([DisallowNull] List<List<int>> obj)
             {
-                return obj.Select(h => Hash(h)).Aggregate((a, b) => a ^ b);
+                return obj.Select(Hash).Aggregate((a, b) => a ^ b);
             }
         }
 
