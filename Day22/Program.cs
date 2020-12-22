@@ -39,6 +39,12 @@ namespace Day22
 
             while (queues.All(q => q.Count > 0))
             {
+                if (history.Contains(QueuesToHistoryItem(queues)))
+                {
+                    // cycle detected
+                    return (0, 0);
+                }
+
                 history.Add(QueuesToHistoryItem(queues));
 
                 var top = queues.Select(q => q.Dequeue()).ToList();
@@ -53,12 +59,6 @@ namespace Day22
 
                 queues[winnerOfRound].Enqueue(top[winnerOfRound]);
                 queues[winnerOfRound].Enqueue(top[1 - winnerOfRound]);
-
-                if (history.Contains(QueuesToHistoryItem(queues)))
-                {
-                    // cycle detected
-                    return (0, 0);
-                }
             }
 
             var winner = queues.FindIndex(q => q.Count > 0);
