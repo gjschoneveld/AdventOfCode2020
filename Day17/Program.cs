@@ -6,24 +6,33 @@ using System.Linq;
 
 namespace Day17
 {
+    using Position = List<int>;
+
     class Program
     {
-        class PositionComparer : IEqualityComparer<List<int>>
+        class PositionComparer : IEqualityComparer<Position>
         {
-            public bool Equals([AllowNull] List<int> x, [AllowNull] List<int> y)
+            public bool Equals([AllowNull] Position x, [AllowNull] Position y)
             {
                 return x.SequenceEqual(y);
             }
 
-            public int GetHashCode([DisallowNull] List<int> obj)
+            public int GetHashCode([DisallowNull] Position obj)
             {
-                return obj.Aggregate((a, b) => (a << 5) ^ b);
+                var hash = new HashCode();
+
+                foreach (var item in obj)
+                {
+                    hash.Add(item);
+                }
+
+                return hash.ToHashCode();
             }
         }
         
-        static List<int> CreateInitialPosition(int x, int y, int dimension)
+        static Position CreateInitialPosition(int x, int y, int dimension)
         {
-            var result = new List<int> { x, y };
+            var result = new Position { x, y };
 
             while (result.Count < dimension)
             {
@@ -33,7 +42,7 @@ namespace Day17
             return result;
         }
 
-        static List<(int min, int max)> FindLimits(HashSet<List<int>> active, int dimension)
+        static List<(int min, int max)> FindLimits(HashSet<Position> active, int dimension)
         {
             var result = new List<(int min, int max)>();
 
@@ -53,11 +62,11 @@ namespace Day17
             return dimensions.Select(d => (d.min - 1, d.max + 1)).ToList();
         }
 
-        static IEnumerable<List<int>> AllPositions(List<(int min, int max)> limits)
+        static IEnumerable<Position> AllPositions(List<(int min, int max)> limits)
         {
             if (limits.Count == 0)
             {
-                yield return new List<int>();
+                yield return new Position();
                 yield break;
             }
 
@@ -68,7 +77,7 @@ namespace Day17
             {
                 foreach (var inner in innerPositions)
                 {
-                    var position = new List<int> { v };
+                    var position = new Position { v };
                     position.AddRange(inner);
 
                     yield return position;
@@ -76,7 +85,7 @@ namespace Day17
             }
         }
 
-        static int ActiveNeighbours(HashSet<List<int>> active, List<int> position)
+        static int ActiveNeighbours(HashSet<Position> active, Position position)
         {
             var result = 0;
 
@@ -101,7 +110,7 @@ namespace Day17
 
         static int Simulate(string[] input, int dimension)
         {
-            var active = new HashSet<List<int>>(new PositionComparer());
+            var active = new HashSet<Position>(new PositionComparer());
 
             for (int y = 0; y < input.Length; y++)
             {
@@ -118,7 +127,7 @@ namespace Day17
 
             for (int cycle = 1; cycle <= 6; cycle++)
             {
-                var next = new HashSet<List<int>>(new PositionComparer());
+                var next = new HashSet<Position>(new PositionComparer());
 
                 limits = Grow(limits);
 
