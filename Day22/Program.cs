@@ -54,7 +54,7 @@ namespace Day22
 
                 if (recursive && queues.Zip(top, (q, t) => t <= q.Count).All(x => x))
                 {
-                    (winnerOfRound, _) = Simulate(queues.Select((q, i) => q.Take(top[i]).ToList()).ToList(), recursive);
+                    (winnerOfRound, _) = Simulate(queues.Zip(top, (q, t) => q.Take(t).ToList()).ToList(), recursive);
                 }
 
                 queues[winnerOfRound].Enqueue(top[winnerOfRound]);
