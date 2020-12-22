@@ -6,34 +6,36 @@ using System.Linq;
 
 namespace Day22
 {
+    using Hand = List<int>;
+
     class Program
     {
-        class HistoryComparer : IEqualityComparer<List<List<int>>>
+        class HistoryComparer : IEqualityComparer<List<Hand>>
         {
-            public bool Equals([AllowNull] List<List<int>> x, [AllowNull] List<List<int>> y)
+            public bool Equals([AllowNull] List<Hand> x, [AllowNull] List<Hand> y)
             {
                 return x.Zip(y).All(z => z.First.SequenceEqual(z.Second));
             }
 
-            public int Hash(List<int> hand)
+            public int Hash(Hand hand)
             {
                 return hand.Aggregate(0, (a, b) => 50 * a + b);
             }
 
-            public int GetHashCode([DisallowNull] List<List<int>> obj)
+            public int GetHashCode([DisallowNull] List<Hand> obj)
             {
                 return obj.Select(Hash).Aggregate((a, b) => a ^ b);
             }
         }
 
-        static List<List<int>> QueuesToHistoryItem(List<Queue<int>> queues)
+        static List<Hand> QueuesToHistoryItem(List<Queue<int>> queues)
         {
             return queues.Select(q => q.ToList()).ToList();
         }
 
-        static (int winner, int value) Simulate(List<List<int>> players, bool recursive)
+        static (int winner, int value) Simulate(List<Hand> players, bool recursive)
         {
-            var history = new HashSet<List<List<int>>>(new HistoryComparer());
+            var history = new HashSet<List<Hand>>(new HistoryComparer());
 
             var queues = players.Select(p => new Queue<int>(p)).ToList();
 
@@ -74,11 +76,11 @@ namespace Day22
             var player1 = input.Skip(1).TakeWhile(x => x != "").Select(int.Parse).ToList();
             var player2 = input.Skip(player1.Count + 3).Select(int.Parse).ToList();
 
-            (_, var answer1) = Simulate(new List<List<int>> { player1, player2 }, false);
+            (_, var answer1) = Simulate(new List<Hand> { player1, player2 }, false);
 
             Console.WriteLine($"Answer 1: {answer1}");
 
-            (_, var answer2) = Simulate(new List<List<int>> { player1, player2 }, true);
+            (_, var answer2) = Simulate(new List<Hand> { player1, player2 }, true);
 
             Console.WriteLine($"Answer 2: {answer2}");
         }
