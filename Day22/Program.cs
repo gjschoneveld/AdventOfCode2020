@@ -17,25 +17,16 @@ namespace Day22
                 return x.Zip(y).All(z => z.First.SequenceEqual(z.Second));
             }
 
-            public int Hash(Hand hand)
-            {
-                var hash = new HashCode();
-
-                foreach (var card in hand)
-                {
-                    hash.Add(card);
-                }
-
-                return hash.ToHashCode();
-            }
-
             public int GetHashCode([DisallowNull] List<Hand> obj)
             {
                 var hash = new HashCode();
 
                 foreach (var hand in obj)
                 {
-                    hash.Add(Hash(hand));
+                    foreach (var card in hand)
+                    {
+                        hash.Add(card);
+                    }
                 }
 
                 return hash.ToHashCode();
