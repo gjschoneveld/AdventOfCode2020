@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
@@ -7,9 +8,27 @@ namespace Day22
 {
     class Program
     {
+        class RoundComparer : IEqualityComparer<List<List<int>>>
+        {
+            public bool Equals([AllowNull] List<List<int>> x, [AllowNull] List<List<int>> y)
+            {
+                return x.Zip(y).All(z => z.First.SequenceEqual(z.Second));
+            }
+
+            public int Hash(List<int> hand)
+            {
+                return hand.Aggregate(0, (a, b) => 50 * a + b);
+            }
+
+            public int GetHashCode([DisallowNull] List<List<int>> obj)
+            {
+                return obj.Select(h => Hash(h)).Aggregate((a, b) => a ^ b);
+            }
+        }
+
         static (int winner, int value) Simulate(List<List<int>> players, bool recursive)
         {
-            var history = new List<List<List<int>>>();
+            var history = new HashSet<List<List<int>>>(new RoundComparer());
 
             var queues = players.Select(p => new Queue<int>(p)).ToList();
 
@@ -30,7 +49,7 @@ namespace Day22
                 queues[winnerOfRound].Enqueue(top[winnerOfRound]);
                 queues[winnerOfRound].Enqueue(top[1 - winnerOfRound]);
 
-                if (history.Any(h => h.Zip(queues).All(z => z.First.SequenceEqual(z.Second))))
+                if (history.Contains(queues.Select(q => q.ToList()).ToList()))
                 {
                     // cycle detected
                     return (0, 0);
