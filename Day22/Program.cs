@@ -52,7 +52,7 @@ namespace Day22
                 var max = top.Max();
                 var winnerOfRound = top.IndexOf(max);
 
-                if (recursive && queues.Select((q, i) => top[i] <= q.Count).All(x => x))
+                if (recursive && queues.Zip(top, (q, t) => t <= q.Count).All(x => x))
                 {
                     (winnerOfRound, _) = Simulate(queues.Select((q, i) => q.Take(top[i]).ToList()).ToList(), recursive);
                 }
