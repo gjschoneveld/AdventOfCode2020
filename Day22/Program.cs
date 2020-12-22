@@ -8,7 +8,7 @@ namespace Day22
 {
     class Program
     {
-        class RoundComparer : IEqualityComparer<List<List<int>>>
+        class HistoryComparer : IEqualityComparer<List<List<int>>>
         {
             public bool Equals([AllowNull] List<List<int>> x, [AllowNull] List<List<int>> y)
             {
@@ -26,15 +26,20 @@ namespace Day22
             }
         }
 
+        static List<List<int>> QueuesToHistoryItem(List<Queue<int>> queues)
+        {
+            return queues.Select(q => q.ToList()).ToList();
+        }
+
         static (int winner, int value) Simulate(List<List<int>> players, bool recursive)
         {
-            var history = new HashSet<List<List<int>>>(new RoundComparer());
+            var history = new HashSet<List<List<int>>>(new HistoryComparer());
 
             var queues = players.Select(p => new Queue<int>(p)).ToList();
 
             while (queues.All(q => q.Count > 0))
             {
-                history.Add(queues.Select(q => q.ToList()).ToList());
+                history.Add(QueuesToHistoryItem(queues));
 
                 var top = queues.Select(q => q.Dequeue()).ToList();
 
@@ -49,7 +54,7 @@ namespace Day22
                 queues[winnerOfRound].Enqueue(top[winnerOfRound]);
                 queues[winnerOfRound].Enqueue(top[1 - winnerOfRound]);
 
-                if (history.Contains(queues.Select(q => q.ToList()).ToList()))
+                if (history.Contains(QueuesToHistoryItem(queues)))
                 {
                     // cycle detected
                     return (0, 0);
