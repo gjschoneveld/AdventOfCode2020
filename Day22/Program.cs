@@ -19,12 +19,26 @@ namespace Day22
 
             public int Hash(Hand hand)
             {
-                return hand.Aggregate(0, (a, b) => 50 * a + b);
+                var hash = new HashCode();
+
+                foreach (var card in hand)
+                {
+                    hash.Add(card);
+                }
+
+                return hash.ToHashCode();
             }
 
             public int GetHashCode([DisallowNull] List<Hand> obj)
             {
-                return obj.Select(Hash).Aggregate((a, b) => a ^ b);
+                var hash = new HashCode();
+
+                foreach (var hand in obj)
+                {
+                    hash.Add(Hash(hand));
+                }
+
+                return hash.ToHashCode();
             }
         }
 
