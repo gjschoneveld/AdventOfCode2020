@@ -130,10 +130,11 @@ namespace Day23
         static void Main(string[] args)
         {
             var input = "739862541";
+            var inputValues = input.Select(i => i - '0').ToList();
 
             var circularList1 = new CircularList(9);
 
-            foreach (var value in input.Select(i => i - '0'))
+            foreach (var value in inputValues)
             {
                 circularList1.AddLast(value);
             }
@@ -147,7 +148,7 @@ namespace Day23
 
             var circularList2 = new CircularList(1_000_000);
 
-            foreach (var value in input.Select(i => i - '0'))
+            foreach (var value in inputValues)
             {
                 circularList2.AddLast(value);
             }
