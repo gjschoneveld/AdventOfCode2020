@@ -8,28 +8,43 @@ namespace Day23
     {
         public const int PickupSize = 3;
 
-        public List<int> Items { get; set; }
+        public LinkedList<int> Items { get; set; }
 
-        public int CurrentItem => Items[0];
+        public int CurrentItem => Items.First.Value;
 
         public void Rotate()
         {
-            Items = Items.Skip(1).Take(Items.Count - 1).Append(Items[0]).ToList();
+            var currentItem = CurrentItem;
+
+            Items.RemoveFirst();
+            Items.AddLast(currentItem);
         }
 
         public List<int> Remove()
         {
-            var result = Items.GetRange(1, PickupSize);
+            var result = new List<int>();
 
-            Items.RemoveRange(1, PickupSize);
+            var node = Items.First.Next;
+
+            for (int i = 0; i < PickupSize; i++)
+            {
+                result.Add(node.Value);
+                node = node.Next;
+                Items.Remove(node.Previous);
+            }
 
             return result;
         }
 
         public void Insert(int destination, List<int> values)
         {
-            var index = Items.IndexOf(destination) + 1;
-            Items.InsertRange(index, values);
+            var node = Items.Find(destination);
+
+            foreach (var value in values)
+            {
+                Items.AddAfter(node, value);
+                node = node.Next;
+            }
         }
 
         public int State1 => Items
@@ -69,6 +84,12 @@ namespace Day23
 
             for (int move = 1; move <= moves; move++)
             {
+                if (move % 1_000 == 0)
+                {
+                    var percentage = (double)move / moves * 100;
+                    Console.WriteLine($"{move} of {moves} = {percentage:N2}%");
+                }
+
                 var current = circularList.CurrentItem;
                 var group = circularList.Remove();
 
@@ -91,7 +112,7 @@ namespace Day23
 
             var circularList1 = new CircularList
             {
-                Items = input.Select(i => i - '0').ToList()
+                Items = new LinkedList<int>(input.Select(i => i - '0'))
             };
 
             Simulate(circularList1, 100);
@@ -103,18 +124,18 @@ namespace Day23
 
             var circularList2 = new CircularList
             {
-                Items = input.Select(i => i - '0').ToList()
+                Items = new LinkedList<int>(input.Select(i => i - '0'))
             };
 
             var next = circularList2.Items.Max() + 1;
 
             while (next <= 1_000_000)
             {
-                circularList2.Items.Add(next);
+                circularList2.Items.AddLast(next);
                 next++;
             }
 
-            Simulate(circularList2, 1_000);
+            Simulate(circularList2, 10_000_000);
 
             var answer2 = circularList2.State2;
 
