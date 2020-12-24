@@ -46,29 +46,23 @@ namespace Day24
 
         static (int x, int y) Move((int x, int y) position, string direction)
         {
-            var change = DirectionToChange(direction);
+            var (dx, dy) = DirectionToChange(direction);
 
-            return (position.x + change.dx, position.y + change.dy);
+            return (position.x + dx, position.y + dy);
         }
 
-        static int BlackNeighbours(HashSet<(int x, int y)> black, (int x, int y) position)
+        static List<(int x, int y)> Neighbours((int x, int y) position)
         {
             var directions = new List<string> { "e", "se", "sw", "w", "nw", "ne" };
 
             return directions
                 .Select(d => Move(position, d))
-                .Count(nb => black.Contains(nb));
+                .ToList();
         }
 
-        static IEnumerable<(int x, int y)> GeneratePositions(int max)
+        static int BlackNeighbours(HashSet<(int x, int y)> black, (int x, int y) position)
         {
-            for (int x = -max; x <= max; x++)
-            {
-                for (int y = -max; y <= max; y++)
-                {
-                    yield return (x, y);
-                }
-            }
+            return Neighbours(position).Count(nb => black.Contains(nb));
         }
 
         static void Flip(HashSet<(int x, int y)> black, (int x, int y) position)
@@ -103,26 +97,24 @@ namespace Day24
 
             var days = 100;
 
-            var extremes = new List<int> { 
-                black.Max(t => t.x), 
-                black.Max(t => t.y), 
-                -black.Min(t => t.x),
-                -black.Min(t => t.y)};
-
-            var max = extremes.Max() + 1;
-
             for (int day = 1; day <= days; day++)
             {
-                var candidates = GeneratePositions(max);
-                max++;
+                var candidates = black
+                    .SelectMany(Neighbours)
+                    .Concat(black)
+                    .Distinct()
+                    .ToList();
 
-                var flipped = candidates.Where(p => {
-                    var isBlack = black.Contains(p);
-                    var blackNeighbours = BlackNeighbours(black, p);
+                var flipped = candidates
+                    .Where(p =>
+                    {
+                        var isBlack = black.Contains(p);
+                        var blackNeighbours = BlackNeighbours(black, p);
 
-                    return (isBlack && (blackNeighbours == 0 || blackNeighbours > 2)) ||
-                        (!isBlack && blackNeighbours == 2);
-                }).ToList();
+                        return (isBlack && (blackNeighbours == 0 || blackNeighbours > 2)) ||
+                            (!isBlack && blackNeighbours == 2);
+                    })
+                    .ToList();
 
                 foreach (var position in flipped)
                 {
