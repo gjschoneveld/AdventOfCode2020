@@ -91,12 +91,7 @@ namespace Day24
 
             foreach (var line in parsed)
             {
-                var position = (x: 0, y: 0);
-
-                foreach (var direction in line)
-                {
-                    position = Move(position, direction);
-                }
+                var position = line.Aggregate((x: 0, y: 0), Move);
 
                 Flip(black, position);
             }
@@ -118,29 +113,21 @@ namespace Day24
 
             for (int day = 1; day <= days; day++)
             {
-                var flipped = new List<(int x, int y)>();
+                var candidates = GeneratePositions(max);
+                max++;
 
-                foreach (var position in GeneratePositions(max))
-                {
-                    var isBlack = black.Contains(position);
-                    var blackNeighbours = BlackNeighbours(black, position);
+                var flipped = candidates.Where(p => {
+                    var isBlack = black.Contains(p);
+                    var blackNeighbours = BlackNeighbours(black, p);
 
-                    if (isBlack && (blackNeighbours == 0 || blackNeighbours > 2))
-                    {
-                        flipped.Add(position);
-                    }
-                    else if (!isBlack && blackNeighbours == 2)
-                    {
-                        flipped.Add(position);
-                    }
-                }
+                    return (isBlack && (blackNeighbours == 0 || blackNeighbours > 2)) ||
+                        (!isBlack && blackNeighbours == 2);
+                }).ToList();
 
                 foreach (var position in flipped)
                 {
                     Flip(black, position);
                 }
-
-                max++;
             }
 
             var answer2 = black.Count;
